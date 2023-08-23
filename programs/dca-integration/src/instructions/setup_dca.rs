@@ -14,12 +14,15 @@ pub struct SetupDca<'info> {
     jup_dca: UncheckedAccount<'info>,
 
     /// CHECK: Jup DCA will check
+    #[account(mut)]
     jup_dca_pda: UncheckedAccount<'info>,
 
     /// CHECK: Jup DCA will check
+    #[account(mut)]
     jup_dca_in_ata: UncheckedAccount<'info>,
 
     /// CHECK: Jup DCA will check
+    #[account(mut)]
     jup_dca_out_ata: UncheckedAccount<'info>,
 
     /// CHECK: Jup DCA will check
@@ -91,6 +94,16 @@ pub fn setup_dca(
         ),
         in_amount,
     )?;
+
+    let pda = &mut ctx.accounts.pda;
+    pda.idx = application_idx;
+    pda.user = *ctx.accounts.user.key;
+    pda.input_mint = ctx.accounts.input_mint.key();
+    pda.output_mint = ctx.accounts.output_mint.key();
+    pda.bump = *ctx
+        .bumps
+        .get(unsafe { std::str::from_utf8_unchecked(PDA_SEED) })
+        .unwrap();
 
     msg!("Construct open dca ctx");
     let idx_bytes = ctx.accounts.pda.idx.to_le_bytes();
