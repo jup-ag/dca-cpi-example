@@ -7,6 +7,7 @@ pub struct Pda {
     pub user: Pubkey,
     pub input_mint: Pubkey,
     pub output_mint: Pubkey,
+    pub dca: Pubkey,
     pub bump: u8,
 }
 

@@ -101,6 +101,7 @@ pub fn setup_dca(
     pda.user = *ctx.accounts.user.key;
     pda.input_mint = ctx.accounts.input_mint.key();
     pda.output_mint = ctx.accounts.output_mint.key();
+    pda.dca = ctx.accounts.jup_dca.key();
     pda.bump = *ctx
         .bumps
         .get(unsafe { std::str::from_utf8_unchecked(PDA_SEED) })
