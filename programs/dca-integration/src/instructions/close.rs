@@ -62,7 +62,6 @@ pub struct Close<'info> {
 }
 
 pub fn close(ctx: Context<Close>) -> Result<()> {
-    msg!("{}", ctx.accounts.dca.lamports());
     // Checks that the DCA account is done and closed before closing escrow account
     require_eq!(ctx.accounts.dca.lamports(), 0, EscrowErrors::DCANotClosed);
 
