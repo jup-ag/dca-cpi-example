@@ -11,11 +11,11 @@ use jupiter_dca::cpi::{self};
 #[instruction(application_idx: u64)]
 pub struct SetupDca<'info> {
     /// CHECK: Jup DCA will check
-    jup_dca: UncheckedAccount<'info>,
+    jup_dca_program: UncheckedAccount<'info>,
 
     /// CHECK: Jup DCA will check
     #[account(mut)]
-    jup_dca_pda: UncheckedAccount<'info>,
+    jup_dca: UncheckedAccount<'info>,
 
     /// CHECK: Jup DCA will check
     #[account(mut)]
@@ -111,13 +111,13 @@ pub fn setup_dca(
     let open_dca_accounts = cpi::accounts::OpenDca {
         input_mint: ctx.accounts.input_mint.to_account_info(),
         output_mint: ctx.accounts.output_mint.to_account_info(),
-        dca: ctx.accounts.jup_dca_pda.to_account_info(),
+        dca: ctx.accounts.jup_dca.to_account_info(),
         user: ctx.accounts.pda.to_account_info(),
         user_ata: ctx.accounts.pda_in_ata.to_account_info(),
         in_ata: ctx.accounts.jup_dca_in_ata.to_account_info(),
         out_ata: ctx.accounts.jup_dca_out_ata.to_account_info(),
         event_authority: ctx.accounts.jup_dca_event_authority.to_account_info(),
-        program: ctx.accounts.jup_dca.to_account_info(),
+        program: ctx.accounts.jup_dca_program.to_account_info(),
         system_program: ctx.accounts.system_program.to_account_info(),
         token_program: ctx.accounts.token_program.to_account_info(),
         associated_token_program: ctx.accounts.associated_token_program.to_account_info(),

@@ -117,8 +117,8 @@ async function setupDCA(
     .accounts({
       user: user.publicKey,
       userTokenAccount: userInTokenAccount,
-      jupDca: DCA_PROGRAM_ID_BY_CLUSTER['mainnet-beta'],
-      jupDcaPda: dcaPubKey,
+      jupDcaProgram: DCA_PROGRAM_ID_BY_CLUSTER['mainnet-beta'],
+      jupDca: dcaPubKey,
       jupDcaInAta: getAssociatedTokenAddressSync(inputMint, dcaPubKey, true),
       jupDcaOutAta: getAssociatedTokenAddressSync(outputMint, dcaPubKey, true),
       jupDcaEventAuthority: new PublicKey(
