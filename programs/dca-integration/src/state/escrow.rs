@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 #[account]
 #[derive(InitSpace)]
-pub struct Pda {
+pub struct Escrow {
     pub idx: u64,
     pub user: Pubkey,
     pub input_mint: Pubkey,
@@ -11,20 +11,20 @@ pub struct Pda {
     pub bump: u8,
 }
 
-impl Pda {
+impl Escrow {
     pub const LEN: usize = 8 + Self::INIT_SPACE;
 }
 
 #[macro_export]
-macro_rules! pda_seeds {
-    ( $pda:expr, $idx_bytes:expr ) => {
+macro_rules! escrow_seeds {
+    ( $escrow:expr, $idx_bytes:expr ) => {
         &[
-            PDA_SEED,
-            $pda.user.as_ref(),
-            $pda.input_mint.as_ref(),
-            $pda.output_mint.as_ref(),
+            ESCROW_SEED,
+            $escrow.user.as_ref(),
+            $escrow.input_mint.as_ref(),
+            $escrow.output_mint.as_ref(),
             $idx_bytes.as_ref(),
-            &[$pda.bump],
+            &[$escrow.bump],
         ]
     };
 }

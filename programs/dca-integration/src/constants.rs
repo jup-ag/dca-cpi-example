@@ -1,1 +1,1 @@
-pub const PDA_SEED: &[u8] = b"pda";
+pub const ESCROW_SEED: &[u8] = b"escrow";

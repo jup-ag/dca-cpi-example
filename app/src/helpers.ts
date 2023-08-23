@@ -5,7 +5,7 @@ import {
 import { Connection, PublicKey, TransactionInstruction } from '@solana/web3.js';
 import { BN } from '@coral-xyz/anchor';
 
-const PDA_SEED = 'pda';
+const ESCROW_SEED = 'escrow';
 
 interface GetOrCreateATAResponse {
   ataPubKey: PublicKey;
@@ -45,7 +45,7 @@ export async function getOrCreateATAInstruction(
   }
 }
 
-export function derivePda(
+export function deriveEscrow(
   programId: PublicKey,
   user: PublicKey,
   inputMint: PublicKey,
@@ -56,7 +56,7 @@ export function derivePda(
 
   const [dcaPubKey] = PublicKey.findProgramAddressSync(
     [
-      Buffer.from(PDA_SEED),
+      Buffer.from(ESCROW_SEED),
       user.toBuffer(),
       inputMint.toBuffer(),
       outputMint.toBuffer(),

@@ -1,7 +1,7 @@
-use crate::constants::PDA_SEED;
-use crate::{pda_seeds, state::Pda};
+use crate::constants::ESCROW_SEED;
+use crate::{escrow_seeds, state::Escrow};
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self,spl_token::native_mint};
+use anchor_spl::token::{self, spl_token::native_mint};
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token, TokenAccount, Transfer},
@@ -45,27 +45,27 @@ pub struct SetupDca<'info> {
     #[account(
       init,
       payer = user,
-      space = Pda::LEN,
-      seeds = [PDA_SEED, user.key().as_ref(), input_mint.key().as_ref(), output_mint.key().as_ref(), application_idx.to_le_bytes().as_ref()],
+      space = Escrow::LEN,
+      seeds = [ESCROW_SEED, user.key().as_ref(), input_mint.key().as_ref(), output_mint.key().as_ref(), application_idx.to_le_bytes().as_ref()],
       bump
     )]
-    pda: Box<Account<'info, Pda>>,
+    escrow: Box<Account<'info, Escrow>>,
 
     #[account(
       init,
       payer=user,
-      associated_token::authority=pda,
+      associated_token::authority=escrow,
       associated_token::mint=input_mint,
     )]
-    pda_in_ata: Box<Account<'info, TokenAccount>>,
+    escrow_in_ata: Box<Account<'info, TokenAccount>>,
 
     #[account(
       init,
       payer=user,
-      associated_token::authority=pda,
+      associated_token::authority=escrow,
       associated_token::mint=output_mint,
     )]
-    pda_out_ata: Box<Account<'info, TokenAccount>>,
+    escrow_out_ata: Box<Account<'info, TokenAccount>>,
 
     system_program: Program<'info, System>,
     token_program: Program<'info, Token>,
@@ -89,34 +89,34 @@ pub fn setup_dca(
             ctx.accounts.token_program.to_account_info(),
             Transfer {
                 from: ctx.accounts.user_token_account.to_account_info(),
-                to: ctx.accounts.pda_in_ata.to_account_info(),
+                to: ctx.accounts.escrow_in_ata.to_account_info(),
                 authority: ctx.accounts.user.to_account_info(),
             },
         ),
         in_amount,
     )?;
 
-    let pda = &mut ctx.accounts.pda;
-    pda.idx = application_idx;
-    pda.user = *ctx.accounts.user.key;
-    pda.input_mint = ctx.accounts.input_mint.key();
-    pda.output_mint = ctx.accounts.output_mint.key();
-    pda.dca = ctx.accounts.jup_dca.key();
-    pda.bump = *ctx
+    let escrow = &mut ctx.accounts.escrow;
+    escrow.idx = application_idx;
+    escrow.user = *ctx.accounts.user.key;
+    escrow.input_mint = ctx.accounts.input_mint.key();
+    escrow.output_mint = ctx.accounts.output_mint.key();
+    escrow.dca = ctx.accounts.jup_dca.key();
+    escrow.bump = *ctx
         .bumps
-        .get(unsafe { std::str::from_utf8_unchecked(PDA_SEED) })
+        .get(unsafe { std::str::from_utf8_unchecked(ESCROW_SEED) })
         .unwrap();
 
     msg!("Construct open dca ctx");
-    let idx_bytes = ctx.accounts.pda.idx.to_le_bytes();
-    let signer_seeds: &[&[&[u8]]] = &[pda_seeds!(ctx.accounts.pda, idx_bytes)];
+    let idx_bytes = ctx.accounts.escrow.idx.to_le_bytes();
+    let signer_seeds: &[&[&[u8]]] = &[escrow_seeds!(ctx.accounts.escrow, idx_bytes)];
     let open_dca_accounts = cpi::accounts::OpenDcaOnBehalf {
         input_mint: ctx.accounts.input_mint.to_account_info(),
         output_mint: ctx.accounts.output_mint.to_account_info(),
         dca: ctx.accounts.jup_dca.to_account_info(),
         payer: ctx.accounts.user.to_account_info(),
-        user: ctx.accounts.pda.to_account_info(),
-        user_ata: ctx.accounts.pda_in_ata.to_account_info(),
+        user: ctx.accounts.escrow.to_account_info(),
+        user_ata: ctx.accounts.escrow_in_ata.to_account_info(),
         in_ata: ctx.accounts.jup_dca_in_ata.to_account_info(),
         out_ata: ctx.accounts.jup_dca_out_ata.to_account_info(),
         event_authority: ctx.accounts.jup_dca_event_authority.to_account_info(),
@@ -146,7 +146,7 @@ pub fn setup_dca(
     )?;
     msg!("Success");
 
-    if close_wsol_in_ata == Some(true) && ctx.accounts.pda.input_mint == native_mint::ID {
+    if close_wsol_in_ata == Some(true) && ctx.accounts.escrow.input_mint == native_mint::ID {
         token::close_account(CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
             token::CloseAccount {

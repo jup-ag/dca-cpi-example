@@ -16,7 +16,7 @@ import {
   createSyncNativeInstruction,
   getAssociatedTokenAddressSync,
 } from '@solana/spl-token';
-import { derivePda, getOrCreateATAInstruction } from './helpers';
+import { deriveEscrow, getOrCreateATAInstruction } from './helpers';
 import { Decimal } from 'decimal.js';
 
 const RPC = process.env.RPC || 'https://api.devnet.solana.com';
@@ -61,14 +61,14 @@ async function setupDCA(
   cycleSecondsApart: string,
 ) {
   const uid = new BN(parseInt((Date.now() / 1000).toString()));
-  const pda = derivePda(
+  const escrow = deriveEscrow(
     program.programId,
     user.publicKey,
     inputMint,
     outputMint,
     uid,
   );
-  const dcaPubKey = await dca.getDcaPubKey(pda, inputMint, outputMint, uid);
+  const dcaPubKey = await dca.getDcaPubKey(escrow, inputMint, outputMint, uid);
 
   const preInstructions: TransactionInstruction[] = [
     ComputeBudgetProgram.setComputeUnitLimit({
@@ -106,9 +106,9 @@ async function setupDCA(
     jupDcaEventAuthority: new PublicKey(
       'Cspp27eGUDMXxPEdhmEXFVRn6Lt1L7xJyALF3nmnWoBj',
     ),
-    pda,
-    pdaInAta: getAssociatedTokenAddressSync(inputMint, pda, true),
-    pdaOutAta: getAssociatedTokenAddressSync(outputMint, pda, true),
+    escrow,
+    escrowInAta: getAssociatedTokenAddressSync(inputMint, escrow, true),
+    escrowOutAta: getAssociatedTokenAddressSync(outputMint, escrow, true),
     inputMint: inputMint,
     outputMint: outputMint,
   });
@@ -134,9 +134,9 @@ async function setupDCA(
       jupDcaEventAuthority: new PublicKey(
         'Cspp27eGUDMXxPEdhmEXFVRn6Lt1L7xJyALF3nmnWoBj',
       ),
-      pda,
-      pdaInAta: getAssociatedTokenAddressSync(inputMint, pda, true),
-      pdaOutAta: getAssociatedTokenAddressSync(outputMint, pda, true),
+      escrow,
+      escrowInAta: getAssociatedTokenAddressSync(inputMint, escrow, true),
+      escrowOutAta: getAssociatedTokenAddressSync(outputMint, escrow, true),
       inputMint: inputMint,
       outputMint: outputMint,
     })
@@ -147,7 +147,7 @@ async function setupDCA(
     const txHash = await sendAndConfirmTransaction(connection, tx, [user], {
       skipPreflight: false,
     });
-    console.log('Created DCA Escrow: ', { txHash, dcaPubKey, pda });
+    console.log('Created DCA Escrow: ', { txHash, dcaPubKey, escrow });
     return txHash;
   } catch (err) {
     console.log(err);
@@ -157,7 +157,7 @@ async function setupDCA(
 
 async function close(
   dca: PublicKey,
-  pda: PublicKey,
+  escrow: PublicKey,
   inputMint: PublicKey,
   outputMint: PublicKey,
 ) {
@@ -172,10 +172,10 @@ async function close(
         user.publicKey,
         false,
       ),
-      pda,
+      escrow,
       dca,
-      pdaInAta: getAssociatedTokenAddressSync(inputMint, pda, true),
-      pdaOutAta: getAssociatedTokenAddressSync(outputMint, pda, true),
+      escrowInAta: getAssociatedTokenAddressSync(inputMint, escrow, true),
+      escrowOutAta: getAssociatedTokenAddressSync(outputMint, escrow, true),
     })
     .transaction();
 
@@ -204,9 +204,9 @@ async function close(
 // }
 
 async function main() {
-  const pda = new PublicKey('7JS39mULAEAAoDui8kvLSx4w6oko5BLUUpFR6vzS12tx');
-  const dca = new PublicKey('8F55HCmf9w1VynbLWR5FzAavxBmwBEbqFi1JCguhGjeG');
-  await close(dca, pda, inputMint, outputMint);
+  const escrow = new PublicKey('DfxPUQ3c46RrB58DpRfsK1sGmN3mcagSSUkM4X9J2GAx');
+  const dca = new PublicKey('54GT2Z38aR6gyBukc5kvLac7J73rWudRSkn79TBgZg2g');
+  await close(dca, escrow, inputMint, outputMint);
 }
 
 main();
