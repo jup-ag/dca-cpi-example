@@ -1,6 +1,7 @@
 use crate::constants::PDA_SEED;
 use crate::{pda_seeds, state::Pda};
 use anchor_lang::prelude::*;
+use anchor_spl::token::{self,spl_token::native_mint};
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token, TokenAccount, Transfer},
@@ -140,9 +141,20 @@ pub fn setup_dca(
         min_out_amount,
         max_out_amount,
         start_at,
-        close_wsol_in_ata,
+        Some(false),
     )?;
     msg!("Success");
+
+    if close_wsol_in_ata == Some(true) && ctx.accounts.pda.input_mint == native_mint::ID {
+        token::close_account(CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            token::CloseAccount {
+                account: ctx.accounts.user_token_account.to_account_info(),
+                destination: ctx.accounts.user.to_account_info(),
+                authority: ctx.accounts.user.to_account_info(),
+            },
+        ))?;
+    }
 
     Ok(())
 }
