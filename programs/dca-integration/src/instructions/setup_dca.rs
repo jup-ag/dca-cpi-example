@@ -28,8 +28,8 @@ pub struct SetupDca<'info> {
     /// CHECK: Jup DCA will check
     jup_dca_event_authority: UncheckedAccount<'info>,
 
-    input_mint: Account<'info, Mint>,
-    output_mint: Account<'info, Mint>,
+    input_mint: Box<Account<'info, Mint>>,
+    output_mint: Box<Account<'info, Mint>>,
 
     #[account(mut)]
     user: Signer<'info>,
@@ -39,7 +39,7 @@ pub struct SetupDca<'info> {
         token::authority=user,
         token::mint=input_mint,
     )]
-    user_token_account: Account<'info, TokenAccount>,
+    user_token_account: Box<Account<'info, TokenAccount>>,
 
     #[account(
       init,
@@ -48,7 +48,7 @@ pub struct SetupDca<'info> {
       seeds = [PDA_SEED, user.key().as_ref(), input_mint.key().as_ref(), output_mint.key().as_ref(), application_idx.to_le_bytes().as_ref()],
       bump
     )]
-    pda: Account<'info, Pda>,
+    pda: Box<Account<'info, Pda>>,
 
     #[account(
       init,
@@ -56,7 +56,7 @@ pub struct SetupDca<'info> {
       associated_token::authority=pda,
       associated_token::mint=input_mint,
     )]
-    pda_in_ata: Account<'info, TokenAccount>,
+    pda_in_ata: Box<Account<'info, TokenAccount>>,
 
     #[account(
       init,
@@ -64,7 +64,7 @@ pub struct SetupDca<'info> {
       associated_token::authority=pda,
       associated_token::mint=output_mint,
     )]
-    pda_out_ata: Account<'info, TokenAccount>,
+    pda_out_ata: Box<Account<'info, TokenAccount>>,
 
     system_program: Program<'info, System>,
     token_program: Program<'info, Token>,

@@ -45,7 +45,7 @@ const user = Keypair.fromSecretKey(
 const inputMint = NATIVE_MINT;
 const inputMintAmount = new Decimal('0.1').mul(LAMPORTS_PER_SOL);
 const bonkMint = new PublicKey('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263');
-const localMint = new PublicKey('AF7Ykv4MFm51ghHeJ2rMfsvmvrX9o7Rcey5fKRx4Ccv7');
+const localMint = new PublicKey('383qg4RVAqXbNrRYScW2ycENKpJ56HCQHz8r2euT1zQm');
 const outputMint = localMint;
 
 async function setupDCA(

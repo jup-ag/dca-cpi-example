@@ -17,5 +17,13 @@ default = []
 
 [dependencies]
 anchor-lang = { version = "0.28.0", features = ["init-if-needed"] }
-anchor-spl = "0.28.0"
+anchor-spl = { version = "0.28.0" }
 jupiter-dca = { git = "https://github.com/jup-ag/dca-cpi", rev = "4c8fcdf" }
+
+# anchor-lang = { git = "https://github.com/coral-xyz/anchor.git", rev = "c7c7319", features = ["init-if-needed"] }
+# anchor-spl = { git = "https://github.com/coral-xyz/anchor.git", rev = "c7c7319" }
+# jupiter-dca = { git = "https://github.com/jup-ag/dca-cpi", rev = "54ee9a1" }
+
+# cargo update -p solana-zk-token-sdk --precise 1.14.19
+# cargo update -p borsh@0.10.3 --precise 0.9.3
+# cargo update -p solana-program@1.16.9 --precise 1.14.24
