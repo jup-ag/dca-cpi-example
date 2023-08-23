@@ -30,7 +30,7 @@ const provider = new AnchorProvider(
 );
 const program = new Program(IDL, programId, provider);
 
-const dca = new DCA(connection, Network.MAINNET);
+const dcaClient = new DCA(connection, Network.MAINNET);
 
 const user = Keypair.fromSecretKey(
   new Uint8Array(JSON.parse(process.env.USER_PRIVATE_KEY!)),
@@ -68,7 +68,12 @@ async function setupDCA(
     outputMint,
     uid,
   );
-  const dcaPubKey = await dca.getDcaPubKey(escrow, inputMint, outputMint, uid);
+  const dcaPubKey = await dcaClient.getDcaPubKey(
+    escrow,
+    inputMint,
+    outputMint,
+    uid,
+  );
 
   const preInstructions: TransactionInstruction[] = [
     ComputeBudgetProgram.setComputeUnitLimit({
@@ -192,6 +197,17 @@ async function close(
   }
 }
 
+async function findByUser(user: PublicKey) {
+  return program.account.escrow.all([
+    {
+      memcmp: {
+        offset: 8 + 8,
+        bytes: user.toBase58(),
+      },
+    },
+  ]);
+}
+
 // async function main() {
 //   await setupDCA(
 //     getAssociatedTokenAddressSync(inputMint, user.publicKey, true),
@@ -203,10 +219,21 @@ async function close(
 //   );
 // }
 
+// async function main() {
+//   const escrow = new PublicKey('DfxPUQ3c46RrB58DpRfsK1sGmN3mcagSSUkM4X9J2GAx');
+//   const dca = new PublicKey('54GT2Z38aR6gyBukc5kvLac7J73rWudRSkn79TBgZg2g');
+//   await close(dca, escrow, inputMint, outputMint);
+// }
+
 async function main() {
-  const escrow = new PublicKey('DfxPUQ3c46RrB58DpRfsK1sGmN3mcagSSUkM4X9J2GAx');
-  const dca = new PublicKey('54GT2Z38aR6gyBukc5kvLac7J73rWudRSkn79TBgZg2g');
-  await close(dca, escrow, inputMint, outputMint);
+  const res = await findByUser(user.publicKey);
+
+  for (const escrow of res) {
+    console.log({ address: escrow.publicKey, info: escrow.account });
+    const dca = escrow.account.dca;
+    const dcaInfo = await dcaClient.fetchDCA(dca);
+    console.log({ dcaInfo });
+  }
 }
 
 main();
