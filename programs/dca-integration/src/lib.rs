@@ -3,9 +3,10 @@ use instructions::*;
 
 declare_id!("5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR");
 
-pub mod instructions;
 pub mod constants;
+pub mod instructions;
 pub mod state;
+pub mod errors;
 
 #[program]
 pub mod dca_integration {
@@ -33,5 +34,9 @@ pub mod dca_integration {
             start_at,
             close_wsol_in_ata,
         )
+    }
+
+    pub fn close(ctx: Context<Close>) -> Result<()> {
+        instructions::close(ctx)
     }
 }
