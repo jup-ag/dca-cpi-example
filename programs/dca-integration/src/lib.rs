@@ -11,7 +11,7 @@ pub mod state;
 pub mod dca_integration {
     use super::*;
 
-    pub fn open_dca(
+    pub fn setup_dca(
         ctx: Context<SetupDca>,
         application_idx: u64,
         in_amount: u64,

@@ -1,3 +1,4 @@
+use crate::constants::PDA_SEED;
 use crate::{pda_seeds, state::Pda};
 use anchor_lang::prelude::*;
 use anchor_spl::{
@@ -5,7 +6,6 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount, Transfer},
 };
 use jupiter_dca::cpi::{self};
-use crate::constants::PDA_SEED;
 
 #[derive(Accounts)]
 #[instruction(application_idx: u64)]
@@ -79,6 +79,7 @@ pub fn setup_dca(
     start_at: Option<i64>,
     close_wsol_in_ata: Option<bool>,
 ) -> Result<()> {
+    msg!("Transfer from user");
     anchor_spl::token::transfer(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
@@ -91,6 +92,9 @@ pub fn setup_dca(
         in_amount,
     )?;
 
+    msg!("Construct open dca ctx");
+    let idx_bytes = ctx.accounts.pda.idx.to_le_bytes();
+    let signer_seeds: &[&[&[u8]]] = &[pda_seeds!(ctx.accounts.pda, idx_bytes)];
     let open_dca_accounts = cpi::accounts::OpenDca {
         input_mint: ctx.accounts.input_mint.to_account_info(),
         output_mint: ctx.accounts.output_mint.to_account_info(),
@@ -105,16 +109,14 @@ pub fn setup_dca(
         token_program: ctx.accounts.token_program.to_account_info(),
         associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
     };
-
-    let idx_bytes = ctx.accounts.pda.idx.to_le_bytes();
-    let signer_seeds: &[&[&[u8]]] = &[pda_seeds!(ctx.accounts.pda, idx_bytes)];
-
     let cpi_ctx = CpiContext::new_with_signer(
         ctx.accounts.jup_dca.to_account_info(),
         open_dca_accounts,
         signer_seeds,
     );
+    msg!("Constructed");
 
+    msg!("CPI call to open dca");
     cpi::open_dca(
         cpi_ctx,
         application_idx,
@@ -126,6 +128,7 @@ pub fn setup_dca(
         start_at,
         close_wsol_in_ata,
     )?;
+    msg!("Success");
 
     Ok(())
 }

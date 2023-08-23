@@ -1,0 +1,24 @@
+{
+  "name": "dca-integration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "example": "dotenv ts-node src/index.ts"
+  },
+  "keywords": [],
+  "author": "Josh Teng <josh@raccoons.dev>",
+  "license": "ISC",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.28.0",
+    "@jup-ag/dca-sdk": "^2.3.0",
+    "@solana/spl-token": "0.3.5",
+    "@solana/web3.js": "^1.75.0",
+    "decimal.js": "^10.4.3"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.3.0",
+    "prettier": "^3.0.2",
+    "ts-node": "^10.9.1"
+  }
+}
