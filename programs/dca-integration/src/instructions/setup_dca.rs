@@ -11,10 +11,19 @@ pub const PDA_SEED: &[u8] = b"pda";
 #[derive(Accounts)]
 #[instruction(application_idx: u64)]
 pub struct SetupDca<'info> {
+    /// CHECK: Jup DCA will check
     jup_dca: UncheckedAccount<'info>,
+
+    /// CHECK: Jup DCA will check
     jup_dca_pda: UncheckedAccount<'info>,
+
+    /// CHECK: Jup DCA will check
     jup_dca_in_ata: UncheckedAccount<'info>,
+
+    /// CHECK: Jup DCA will check
     jup_dca_out_ata: UncheckedAccount<'info>,
+
+    /// CHECK: Jup DCA will check
     jup_dca_event_authority: UncheckedAccount<'info>,
 
     input_mint: Account<'info, Mint>,
