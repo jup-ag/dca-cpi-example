@@ -18,12 +18,12 @@ impl Pda {
 macro_rules! pda_seeds {
     ( $pda:expr, $idx_bytes:expr ) => {
         &[
-          PDA_SEED,
-          $pda.user.as_ref(),
-          $pda.input_mint.as_ref(),
-          $pda.output_mint.as_ref(),
-          $idx_bytes.as_ref(),
-          &[$pda.bump]
-          ]
+            PDA_SEED,
+            $pda.user.as_ref(),
+            $pda.input_mint.as_ref(),
+            $pda.output_mint.as_ref(),
+            $idx_bytes.as_ref(),
+            &[$pda.bump],
+        ]
     };
 }

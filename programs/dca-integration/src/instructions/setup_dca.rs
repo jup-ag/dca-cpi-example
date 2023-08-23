@@ -5,8 +5,7 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount, Transfer},
 };
 use jupiter_dca::cpi::{self};
-
-pub const PDA_SEED: &[u8] = b"pda";
+use crate::constants::PDA_SEED;
 
 #[derive(Accounts)]
 #[instruction(application_idx: u64)]

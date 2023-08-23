@@ -4,6 +4,7 @@ use instructions::*;
 declare_id!("5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR");
 
 pub mod instructions;
+pub mod constants;
 pub mod state;
 
 #[program]
