@@ -1241,7 +1241,7 @@ dependencies = [
 [[package]]
 name = "jupiter-dca"
 version = "0.1.0"
-source = "git+https://github.com/jup-ag/dca-cpi?branch=master#8bd63c233b8bb96539d01e9f54ccf4fbe3ad8b43"
+source = "git+https://github.com/jup-ag/dca-cpi?rev=4c8fcdf#4c8fcdff1940f2152849329710dca0f310942bb4"
 dependencies = [
  "anchor-gen",
  "anchor-lang",

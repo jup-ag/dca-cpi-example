@@ -30,7 +30,7 @@ const program = new Program(IDL, programId, provider);
 
 const dca = new DCA(
   connection,
-  RPC.match('devnet') ? Network.DEVNET : Network.MAINNET,
+  Network.MAINNET,
 );
 
 const user = Keypair.fromSecretKey(
@@ -45,6 +45,8 @@ const user = Keypair.fromSecretKey(
 const inputMint = NATIVE_MINT;
 const inputMintAmount = new Decimal('0.1').mul(LAMPORTS_PER_SOL);
 const bonkMint = new PublicKey('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263');
+const localMint = new PublicKey('AF7Ykv4MFm51ghHeJ2rMfsvmvrX9o7Rcey5fKRx4Ccv7');
+const outputMint = localMint;
 
 async function setupDCA(
   userInTokenAccount: PublicKey,
@@ -86,23 +88,6 @@ async function setupDCA(
     preInstructions.push(syncNativeIX);
   }
 
-  console.log({
-    user: user.publicKey,
-    userTokenAccount: userInTokenAccount,
-    jupDca: DCA_PROGRAM_ID_BY_CLUSTER['mainnet-beta'],
-    jupDcaPda: dcaPubKey,
-    jupDcaInAta: getAssociatedTokenAddressSync(inputMint, dcaPubKey, true),
-    jupDcaOutAta: getAssociatedTokenAddressSync(outputMint, dcaPubKey, true),
-    jupDcaEventAuthority: new PublicKey(
-      'Cspp27eGUDMXxPEdhmEXFVRn6Lt1L7xJyALF3nmnWoBj',
-    ),
-    pda,
-    pdaInAta: getAssociatedTokenAddressSync(inputMint, pda, true),
-    pdaOutAta: getAssociatedTokenAddressSync(outputMint, pda, true),
-    inputMint: inputMint,
-    outputMint: outputMint,
-  });
-
   const tx = await program.methods
     .setupDca(
       uid,
@@ -135,7 +120,7 @@ async function setupDCA(
 
   try {
     const txHash = await sendAndConfirmTransaction(connection, tx, [user], {
-      skipPreflight: true,
+      skipPreflight: false,
     });
     console.log('Created DCA: ', { txHash });
     return txHash;
@@ -149,7 +134,7 @@ async function main() {
   await setupDCA(
     getAssociatedTokenAddressSync(inputMint, user.publicKey, true),
     inputMint,
-    bonkMint,
+    outputMint,
     inputMintAmount.toFixed(),
     inputMintAmount.div(new Decimal('2')).toString(),
     '60',

@@ -108,10 +108,11 @@ pub fn setup_dca(
     msg!("Construct open dca ctx");
     let idx_bytes = ctx.accounts.pda.idx.to_le_bytes();
     let signer_seeds: &[&[&[u8]]] = &[pda_seeds!(ctx.accounts.pda, idx_bytes)];
-    let open_dca_accounts = cpi::accounts::OpenDca {
+    let open_dca_accounts = cpi::accounts::OpenDcaOnBehalf {
         input_mint: ctx.accounts.input_mint.to_account_info(),
         output_mint: ctx.accounts.output_mint.to_account_info(),
         dca: ctx.accounts.jup_dca.to_account_info(),
+        payer: ctx.accounts.user.to_account_info(),
         user: ctx.accounts.pda.to_account_info(),
         user_ata: ctx.accounts.pda_in_ata.to_account_info(),
         in_ata: ctx.accounts.jup_dca_in_ata.to_account_info(),
@@ -130,7 +131,7 @@ pub fn setup_dca(
     msg!("Constructed");
 
     msg!("CPI call to open dca");
-    cpi::open_dca(
+    cpi::open_dca_on_behalf(
         cpi_ctx,
         application_idx,
         in_amount,
