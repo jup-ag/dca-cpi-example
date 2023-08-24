@@ -36,6 +36,7 @@ anchor deploy # or anchor run deploy-mainnet (see `Anchor.toml` to know what it 
 ```
 
 ## Client code
+See `/app` directory.
 There are examples on
 - Setting up DCA via your program's escrow vault
 - Closing DCA Escrow (and getting the tokens back)
