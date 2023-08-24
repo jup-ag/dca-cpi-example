@@ -6,7 +6,7 @@ This repository contains a program that composes Jupiter's DCA program via CPI.
 ```
 anchor-lang = { version = "0.28.0", features = ["init-if-needed"] }
 anchor-spl = { version = "0.28.0" }
-jupiter-dca = { git = "https://github.com/jup-ag/dca-cpi", rev = "10a8619" }
+jupiter-dca = { git = "https://github.com/jup-ag/dca-cpi", rev = "a3987c8" }
 ```
 
 This repo works out-of-the-box but if you are building a new project from scratch referencing the code here and using Solana v1.16, you may get errors like
