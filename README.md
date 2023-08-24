@@ -19,7 +19,7 @@ https://github.com/solana-labs/solana/issues/31960#issuecomment-1668682153
 
 Every project will have different dependencies so there is no specific guide that can resolve the error.
 
-The approach to take is to take, as of August 2023, is to downgrade your Solana CLI to 1.14 (we built this project against 1.14.19). You may face issues with building. You can resolve the issue by repeatedly running:
+The approach to take, as of August 2023, is to downgrade your Solana CLI to 1.14 (we built this project against 1.14.19). You may face issues with building. You can resolve the issue by repeatedly running:
 
 ```sh
 anchor build
