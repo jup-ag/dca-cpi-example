@@ -218,21 +218,28 @@ async function findByUser(user: PublicKey) {
 //   );
 // }
 
-// async function main() {
-//   const escrow = new PublicKey('DfxPUQ3c46RrB58DpRfsK1sGmN3mcagSSUkM4X9J2GAx');
-//   const dca = new PublicKey('54GT2Z38aR6gyBukc5kvLac7J73rWudRSkn79TBgZg2g');
-//   await close(dca, escrow, inputMint, outputMint);
-// }
-
 async function main() {
-  const res = await findByUser(user.publicKey);
+  const [escrow1] = await findByUser(user.publicKey);
 
-  for (const escrow of res) {
-    console.log({ address: escrow.publicKey, info: escrow.account });
-    const dca = escrow.account.dca;
-    const dcaInfo = await dcaClient.fetchDCA(dca);
-    console.log({ dcaInfo });
-  }
+  const escrow = escrow1.publicKey;
+  const dca = escrow1.account.dca;
+  await close(
+    dca,
+    escrow,
+    escrow1.account.inputMint,
+    escrow1.account.outputMint,
+  );
 }
+
+// async function main() {
+//   const res = await findByUser(user.publicKey);
+
+//   for (const escrow of res) {
+//     console.log({ address: escrow.publicKey, info: escrow.account });
+//     const dca = escrow.account.dca;
+//     const dcaInfo = await dcaClient.fetchDCA(dca);
+//     console.log({ dcaInfo });
+//   }
+// }
 
 main();
