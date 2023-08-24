@@ -21,7 +21,6 @@ pub mod dca_integration {
         min_out_amount: Option<u64>,
         max_out_amount: Option<u64>,
         start_at: Option<i64>,
-        close_wsol_in_ata: Option<bool>,
     ) -> Result<()> {
         instructions::setup_dca(
             ctx,
@@ -32,7 +31,6 @@ pub mod dca_integration {
             min_out_amount,
             max_out_amount,
             start_at,
-            close_wsol_in_ata,
         )
     }
 

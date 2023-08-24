@@ -1,7 +1,6 @@
 use crate::constants::ESCROW_SEED;
 use crate::{escrow_seeds, state::Escrow};
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, spl_token::native_mint};
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token, TokenAccount, Transfer},
@@ -81,7 +80,6 @@ pub fn setup_dca(
     min_out_amount: Option<u64>,
     max_out_amount: Option<u64>,
     start_at: Option<i64>,
-    close_wsol_in_ata: Option<bool>,
 ) -> Result<()> {
     msg!("Transfer from user");
     anchor_spl::token::transfer(
@@ -102,15 +100,12 @@ pub fn setup_dca(
     escrow.input_mint = ctx.accounts.input_mint.key();
     escrow.output_mint = ctx.accounts.output_mint.key();
     escrow.dca = ctx.accounts.jup_dca.key();
-    escrow.bump = *ctx
-        .bumps
-        .get(unsafe { std::str::from_utf8_unchecked(ESCROW_SEED) })
-        .unwrap();
+    escrow.bump = *ctx.bumps.get("escrow").unwrap();
 
     msg!("Construct open dca ctx");
     let idx_bytes = ctx.accounts.escrow.idx.to_le_bytes();
     let signer_seeds: &[&[&[u8]]] = &[escrow_seeds!(ctx.accounts.escrow, idx_bytes)];
-    let open_dca_accounts = cpi::accounts::OpenDcaOnBehalf {
+    let open_dca_accounts = cpi::accounts::OpenDcaV2 {
         input_mint: ctx.accounts.input_mint.to_account_info(),
         output_mint: ctx.accounts.output_mint.to_account_info(),
         dca: ctx.accounts.jup_dca.to_account_info(),
@@ -130,10 +125,9 @@ pub fn setup_dca(
         open_dca_accounts,
         signer_seeds,
     );
-    msg!("Constructed");
 
     msg!("CPI call to open dca");
-    cpi::open_dca_on_behalf(
+    cpi::open_dca_v2(
         cpi_ctx,
         application_idx,
         in_amount,
@@ -142,20 +136,8 @@ pub fn setup_dca(
         min_out_amount,
         max_out_amount,
         start_at,
-        Some(false),
     )?;
     msg!("Success");
-
-    if close_wsol_in_ata == Some(true) && ctx.accounts.escrow.input_mint == native_mint::ID {
-        token::close_account(CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
-            token::CloseAccount {
-                account: ctx.accounts.user_token_account.to_account_info(),
-                destination: ctx.accounts.user.to_account_info(),
-                authority: ctx.accounts.user.to_account_info(),
-            },
-        ))?;
-    }
 
     Ok(())
 }

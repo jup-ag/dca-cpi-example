@@ -127,7 +127,6 @@ async function setupDCA(
       null,
       null,
       null,
-      false,
     )
     .accounts({
       user: user.publicKey,
