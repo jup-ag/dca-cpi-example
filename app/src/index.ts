@@ -44,13 +44,13 @@ const bonkMint = new PublicKey('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263');
 
 const localMint = new PublicKey('HFpDk6RnhGCVs2fR4kXkxYuNdEiDRp6vRD2UPzhnz5Pc');
 
-// const inputMint = NATIVE_MINT;
-// const inputMintAmount = new Decimal('0.1').mul(LAMPORTS_PER_SOL);
+const inputMint = NATIVE_MINT;
+const inputMintAmount = new Decimal('0.1').mul(LAMPORTS_PER_SOL);
 
-const inputMint = localMint;
-const inputMintAmount = new Decimal('1').mul(LAMPORTS_PER_SOL);
+// const inputMint = localMint;
+// const inputMintAmount = new Decimal('1').mul(LAMPORTS_PER_SOL);
 
-const outputMint = NATIVE_MINT;
+const outputMint = bonkMint;
 
 async function setupDCA(
   userInTokenAccount: PublicKey,
