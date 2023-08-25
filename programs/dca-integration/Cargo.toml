@@ -18,4 +18,4 @@ default = []
 [dependencies]
 anchor-lang = { version = "0.28.0", features = ["init-if-needed"] }
 anchor-spl = { version = "0.28.0" }
-jupiter-dca = { git = "https://github.com/jup-ag/dca-cpi", rev = "a3987c8" }
+jupiter-dca = { git = "https://github.com/jup-ag/dca-cpi", rev = "545c5ee" }
