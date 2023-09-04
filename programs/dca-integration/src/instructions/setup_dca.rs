@@ -97,9 +97,12 @@ pub fn setup_dca(
     let escrow = &mut ctx.accounts.escrow;
     escrow.idx = application_idx;
     escrow.user = *ctx.accounts.user.key;
+    escrow.dca = ctx.accounts.jup_dca.key();
     escrow.input_mint = ctx.accounts.input_mint.key();
     escrow.output_mint = ctx.accounts.output_mint.key();
-    escrow.dca = ctx.accounts.jup_dca.key();
+    escrow.input_amount = in_amount;
+    escrow.output_amount = 0;
+    escrow.completed = false;
     escrow.bump = *ctx.bumps.get("escrow").unwrap();
 
     msg!("Construct open dca ctx");

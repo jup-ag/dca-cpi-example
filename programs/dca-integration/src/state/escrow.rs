@@ -5,9 +5,12 @@ use anchor_lang::prelude::*;
 pub struct Escrow {
     pub idx: u64,
     pub user: Pubkey,
+    pub dca: Pubkey,
     pub input_mint: Pubkey,
     pub output_mint: Pubkey,
-    pub dca: Pubkey,
+    pub input_amount: u64,
+    pub output_amount: u64,
+    pub completed: bool,
     pub bump: u8,
 }
 

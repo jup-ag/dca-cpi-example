@@ -218,28 +218,36 @@ async function findByUser(user: PublicKey) {
 //   );
 // }
 
-async function main() {
-  const [escrow1] = await findByUser(user.publicKey);
-
-  const escrow = escrow1.publicKey;
-  const dca = escrow1.account.dca;
-  await close(
-    dca,
-    escrow,
-    escrow1.account.inputMint,
-    escrow1.account.outputMint,
-  );
-}
-
 // async function main() {
-//   const res = await findByUser(user.publicKey);
+//   const [escrow1] = await findByUser(
+//     new PublicKey('7w32LzRsJrQiE7S3ZSdkz9TSFGey1XNsonPmdm9xDUch'),
+//   );
 
-//   for (const escrow of res) {
-//     console.log({ address: escrow.publicKey, info: escrow.account });
-//     const dca = escrow.account.dca;
-//     const dcaInfo = await dcaClient.fetchDCA(dca);
-//     console.log({ dcaInfo });
-//   }
+//   const escrow = escrow1.publicKey;
+//   const dca = escrow1.account.dca;
+//   await close(
+//     dca,
+//     escrow,
+//     escrow1.account.inputMint,
+//     escrow1.account.outputMint,
+//   );
 // }
+
+async function main() {
+  const res = await findByUser(
+    new PublicKey('7w32LzRsJrQiE7S3ZSdkz9TSFGey1XNsonPmdm9xDUch'),
+  );
+
+  const currentDcas = [];
+  const completedDcas = [];
+
+  for (const escrow of res) {
+    console.log({ address: escrow.publicKey, info: escrow.account });
+
+    currentDcas.push(...(await dcaClient.getCurrentByUser(escrow.publicKey)));
+    completedDcas.push(...(await dcaClient.getClosedByUser(escrow.publicKey)));
+  }
+  console.log({ currentDcas, completedDcas });
+}
 
 main();

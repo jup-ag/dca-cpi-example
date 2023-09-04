@@ -32,7 +32,6 @@ pub struct Close<'info> {
     #[account(
       mut,
       constraint=escrow.user==user.key(),
-      close=user
     )]
     escrow: Box<Account<'info, Escrow>>,
 
@@ -70,6 +69,10 @@ pub fn close(ctx: Context<Close>) -> Result<()> {
         0,
         EscrowErrors::UnexpectedBalance
     );
+
+    let escrow = &mut ctx.accounts.escrow;
+    escrow.output_amount = ctx.accounts.escrow_out_ata.amount; // will this work for native SOL?
+    escrow.completed = true;
 
     let idx_bytes = ctx.accounts.escrow.idx.to_le_bytes();
     let signer_seeds: &[&[&[u8]]] = &[escrow_seeds!(ctx.accounts.escrow, idx_bytes)];
