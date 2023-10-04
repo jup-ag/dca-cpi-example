@@ -22,7 +22,7 @@ import { Decimal } from 'decimal.js';
 const RPC = process.env.RPC || 'https://api.devnet.solana.com';
 const connection = new Connection(RPC);
 
-const programId = new PublicKey('5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR');
+const programId = new PublicKey('EXDCASuSBHrbJqf3tbap86YeWaGoEeCqBhGRbUSnoDqm');
 const provider = new AnchorProvider(
   connection,
   {} as any,
@@ -36,21 +36,14 @@ const user = Keypair.fromSecretKey(
   new Uint8Array(JSON.parse(process.env.USER_PRIVATE_KEY!)),
 );
 
-// USDC
 const usdcMint = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
-const usdcDecimalMultiplier = new Decimal(1_000_000);
 
 const bonkMint = new PublicKey('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263');
-
-const localMint = new PublicKey('HFpDk6RnhGCVs2fR4kXkxYuNdEiDRp6vRD2UPzhnz5Pc');
 
 const inputMint = NATIVE_MINT;
 const inputMintAmount = new Decimal('0.1').mul(LAMPORTS_PER_SOL);
 
-// const inputMint = localMint;
-// const inputMintAmount = new Decimal('1').mul(LAMPORTS_PER_SOL);
-
-const outputMint = usdcMint;
+const outputMint = bonkMint;
 
 async function setupDCA(
   userInTokenAccount: PublicKey,
@@ -227,7 +220,7 @@ async function findByUser(user: PublicKey) {
 
 // Close completed escrows by user
 async function main() {
-  const escrows = await findByUser(new PublicKey(''));
+  const escrows = await findByUser(new PublicKey(user.publicKey));
 
   for (const escrow of escrows) {
     if (
@@ -253,7 +246,7 @@ async function main() {
 // Get current and completed DCA
 // async function main() {
 //   const res = await findByUser(
-//     new PublicKey(''),
+//     new PublicKey(user.publicKey),
 //   );
 
 //   const current = [];
@@ -272,7 +265,7 @@ async function main() {
 // Get current and completed DCA Escrows
 // async function main() {
 //   const res = await findByUser(
-//     new PublicKey(''),
+//     new PublicKey(user.publicKey),
 //   );
 
 //   const open = [];
@@ -288,5 +281,6 @@ async function main() {
 
 //   console.log({ closed, open });
 // }
+
 
 main();

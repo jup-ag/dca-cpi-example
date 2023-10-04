@@ -1,5 +1,5 @@
-use crate::constants::{AIRDROP_BPS, ESCROW_SEED};
-use crate::{escrow_seeds, math, state::Escrow};
+use crate::constants::ESCROW_SEED;
+use crate::{escrow_seeds, state::Escrow};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -71,18 +71,6 @@ pub struct SetupDca<'info> {
     associated_token_program: Program<'info, AssociatedToken>,
 }
 
-impl<'info> SetupDca<'info> {
-    pub fn compute_airdrop_amount(in_amount: u64) -> Result<u64> {
-        let u128_amount = math::checked_div(
-            math::checked_mul(in_amount as u128, AIRDROP_BPS as u128)?,
-            10000,
-        )?;
-        let u64_amount: u64 = math::checked_as_u64(u128_amount)?;
-
-        Ok(u64_amount)
-    }
-}
-
 pub fn setup_dca(
     ctx: Context<SetupDca>,
     application_idx: u64,
@@ -114,8 +102,9 @@ pub fn setup_dca(
     escrow.output_mint = ctx.accounts.output_mint.key();
     escrow.input_amount = in_amount;
     escrow.output_amount = 0;
-    escrow.airdrop_amount = SetupDca::compute_airdrop_amount(in_amount)?;
+    escrow.airdrop_amount = 0;
     escrow.completed = false;
+    escrow.airdropped = false;
     escrow.bump = *ctx.bumps.get("escrow").unwrap();
 
     msg!("Construct open dca ctx");

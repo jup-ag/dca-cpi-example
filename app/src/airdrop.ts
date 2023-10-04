@@ -7,12 +7,13 @@ import {
 } from '@solana/web3.js';
 import { IDL } from '../../target/types/dca_integration';
 import { getAssociatedTokenAddressSync } from '@solana/spl-token';
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 
 const RPC = process.env.RPC || 'https://api.devnet.solana.com';
 const connection = new Connection(RPC);
 
 const escrowProgramId = new PublicKey(
-  '5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR',
+  'EXDCASuSBHrbJqf3tbap86YeWaGoEeCqBhGRbUSnoDqm',
 );
 const provider = new AnchorProvider(
   connection,
@@ -28,22 +29,25 @@ const admin = Keypair.fromSecretKey(
 async function getAccountsToAirdrop() {
   const offset = 169; // 8 + 8 + 32 * 4 + 8 * 3 + 1
 
-  const accountsYetToAidrop = await program.account.escrow.all([
+  const accountsYetToAirdrop = await program.account.escrow.all([
     {
       memcmp: {
         offset,
-        bytes: '0',
+        bytes: bs58.encode([0]),
       },
     },
   ]);
 
-  return accountsYetToAidrop.filter((escrow) => {
-    !escrow.account.completed;
+  const accountsToAirdrop = accountsYetToAirdrop.filter((escrow) => {
+    return escrow.account.completed;
   });
+
+  return accountsToAirdrop;
 }
 
 async function airdrop() {
   const accountsToAirdrop = await getAccountsToAirdrop();
+  console.log({ accountsToAirdrop });
 
   try {
     const res = await Promise.all(

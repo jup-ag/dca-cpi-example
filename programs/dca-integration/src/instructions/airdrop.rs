@@ -14,6 +14,7 @@ pub struct Airdrop<'info> {
     user: UncheckedAccount<'info>,
 
     #[account(
+      mut,
       constraint=escrow.user==user.key(),
     )]
     escrow: Box<Account<'info, Escrow>>,
@@ -53,7 +54,12 @@ pub fn airdrop(ctx: Context<Airdrop>) -> Result<()> {
     require_eq!(
         ctx.accounts.escrow.airdropped,
         false,
-        EscrowErrors::DCANotComplete
+        EscrowErrors::Airdropped
+    );
+    require_gt!(
+        ctx.accounts.escrow.airdrop_amount,
+        0,
+        EscrowErrors::UnexpectedAirdropAmount
     );
     require_gte!(
         ctx.accounts.admin_token_account.amount,
@@ -61,6 +67,11 @@ pub fn airdrop(ctx: Context<Airdrop>) -> Result<()> {
         EscrowErrors::InsufficientBalance
     );
 
+    msg!("Recording airdrop");
+    let escrow = &mut ctx.accounts.escrow;
+    escrow.airdropped = true;
+
+    msg!("Transferring airdrop");
     anchor_spl::token::transfer(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
@@ -72,9 +83,6 @@ pub fn airdrop(ctx: Context<Airdrop>) -> Result<()> {
         ),
         ctx.accounts.escrow.airdrop_amount,
     )?;
-
-    let escrow = &mut ctx.accounts.escrow;
-    escrow.airdropped = true;
 
     Ok(())
 }

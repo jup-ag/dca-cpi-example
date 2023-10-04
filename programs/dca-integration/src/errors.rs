@@ -11,6 +11,9 @@ pub enum EscrowErrors {
     #[msg("Already airdropped")]
     Airdropped,
 
+    #[msg("Unexpected airdrop amount")]
+    UnexpectedAirdropAmount,
+
     #[msg("Unexpected Balance")]
     UnexpectedBalance,
 

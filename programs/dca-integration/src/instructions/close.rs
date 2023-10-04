@@ -1,5 +1,5 @@
-use crate::constants::ESCROW_SEED;
-use crate::{errors::EscrowErrors, escrow_seeds, state::Escrow};
+use crate::constants::{AIRDROP_BPS, ESCROW_SEED};
+use crate::{errors::EscrowErrors, escrow_seeds, math, state::Escrow};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
@@ -60,6 +60,18 @@ pub struct Close<'info> {
     associated_token_program: Program<'info, AssociatedToken>,
 }
 
+impl<'info> Close<'info> {
+    pub fn compute_airdrop_amount(out_amount: u64) -> Result<u64> {
+        let u128_amount = math::checked_div(
+            math::checked_mul(out_amount as u128, AIRDROP_BPS as u128)?,
+            10000,
+        )?;
+        let u64_amount: u64 = math::checked_as_u64(u128_amount)?;
+
+        Ok(u64_amount)
+    }
+}
+
 pub fn close(ctx: Context<Close>) -> Result<()> {
     // Checks that the DCA account is done and closed before closing escrow account
     require_eq!(ctx.accounts.dca.lamports(), 0, EscrowErrors::DCANotClosed);
@@ -73,6 +85,7 @@ pub fn close(ctx: Context<Close>) -> Result<()> {
     let escrow = &mut ctx.accounts.escrow;
     escrow.output_amount = ctx.accounts.escrow_out_ata.amount; // will this work for native SOL?
     escrow.completed = true;
+    escrow.airdrop_amount = Close::compute_airdrop_amount(ctx.accounts.escrow_out_ata.amount)?;
 
     let idx_bytes = ctx.accounts.escrow.idx.to_le_bytes();
     let signer_seeds: &[&[&[u8]]] = &[escrow_seeds!(ctx.accounts.escrow, idx_bytes)];
