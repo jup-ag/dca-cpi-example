@@ -724,6 +724,7 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "jupiter-dca",
+ "num-traits",
 ]
 
 [[package]]

@@ -227,9 +227,7 @@ async function findByUser(user: PublicKey) {
 
 // Close completed escrows by user
 async function main() {
-  const escrows = await findByUser(
-    new PublicKey(''),
-  );
+  const escrows = await findByUser(new PublicKey(''));
 
   for (const escrow of escrows) {
     if (

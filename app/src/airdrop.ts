@@ -1,31 +1,95 @@
-import { AnchorProvider, BN, Program, web3 } from '@coral-xyz/anchor';
-import { DCA, DCA_PROGRAM_ID_BY_CLUSTER, Network } from '@jup-ag/dca-sdk';
+import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import {
-  ComputeBudgetInstruction,
-  ComputeBudgetProgram,
   Connection,
   Keypair,
-  LAMPORTS_PER_SOL,
   PublicKey,
-  TransactionInstruction,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import { IDL } from '../../target/types/dca_integration';
-import {
-  NATIVE_MINT,
-  createSyncNativeInstruction,
-  getAssociatedTokenAddressSync,
-} from '@solana/spl-token';
-import { deriveEscrow, getOrCreateATAInstruction } from './helpers';
-import { Decimal } from 'decimal.js';
+import { getAssociatedTokenAddressSync } from '@solana/spl-token';
 
 const RPC = process.env.RPC || 'https://api.devnet.solana.com';
 const connection = new Connection(RPC);
 
-const programId = new PublicKey('5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR');
+const escrowProgramId = new PublicKey(
+  '5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR',
+);
 const provider = new AnchorProvider(
   connection,
   {} as any,
   AnchorProvider.defaultOptions(),
 );
-const program = new Program(IDL, programId, provider);
+const program = new Program(IDL, escrowProgramId, provider);
+
+const admin = Keypair.fromSecretKey(
+  new Uint8Array(JSON.parse(process.env.ADMIN_PRIVATE_KEY!)),
+);
+
+async function getAccountsToAirdrop() {
+  const offset = 169; // 8 + 8 + 32 * 4 + 8 * 3 + 1
+
+  const accountsYetToAidrop = await program.account.escrow.all([
+    {
+      memcmp: {
+        offset,
+        bytes: '0',
+      },
+    },
+  ]);
+
+  return accountsYetToAidrop.filter((escrow) => {
+    !escrow.account.completed;
+  });
+}
+
+async function airdrop() {
+  const accountsToAirdrop = await getAccountsToAirdrop();
+
+  try {
+    const res = await Promise.all(
+      accountsToAirdrop.map(async (escrow) => {
+        const tx = await program.methods
+          .airdrop()
+          .accounts({
+            admin: admin.publicKey,
+            user: escrow.account.user,
+            escrow: escrow.publicKey,
+            outputMint: escrow.account.outputMint,
+            adminTokenAccount: getAssociatedTokenAddressSync(
+              escrow.account.outputMint,
+              admin.publicKey,
+              false,
+            ),
+            userTokenAccount: getAssociatedTokenAddressSync(
+              escrow.account.outputMint,
+              escrow.account.user,
+              false,
+            ),
+          })
+          .transaction();
+
+        return sendAndConfirmTransaction(connection, tx, [admin], {
+          skipPreflight: false,
+          commitment: 'confirmed',
+        });
+      }),
+    );
+    console.log({ res });
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function main() {
+  while (true) {
+    try {
+      await airdrop();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (err) {
+      // add error handling if needed
+      throw err;
+    }
+  }
+}
+
+main();

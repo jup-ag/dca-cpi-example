@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use instructions::*;
+pub mod math;
 
 declare_id!("5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR");
 

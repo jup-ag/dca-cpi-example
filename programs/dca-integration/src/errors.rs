@@ -16,4 +16,7 @@ pub enum EscrowErrors {
 
     #[msg("Insufficient Balance")]
     InsufficientBalance,
+
+    #[msg("Overflow")]
+    MathOverflow,
 }
