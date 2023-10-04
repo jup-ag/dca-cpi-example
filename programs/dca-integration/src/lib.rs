@@ -37,4 +37,8 @@ pub mod dca_integration {
     pub fn close(ctx: Context<Close>) -> Result<()> {
         instructions::close(ctx)
     }
+
+    pub fn airdrop(ctx: Context<Airdrop>) -> Result<()> {
+        instructions::airdrop(ctx)
+    }
 }

@@ -10,7 +10,9 @@ pub struct Escrow {
     pub output_mint: Pubkey,
     pub input_amount: u64,
     pub output_amount: u64,
+    pub airdrop_amount: u64,
     pub completed: bool,
+    pub airdropped: bool,
     pub bump: u8,
 }
 

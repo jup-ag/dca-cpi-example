@@ -207,11 +207,13 @@ async function findByUser(user: PublicKey) {
   ]);
 }
 
+// Get All Escrow Accounts
 // async function main() {
 //   const escrowAccounts = await program.account.escrow.all();
 //   console.log({ escrowAccounts });
 // }
 
+// Setup a DCA with Escrow
 // async function main() {
 //   await setupDCA(
 //     getAssociatedTokenAddressSync(inputMint, user.publicKey, true),
@@ -223,6 +225,7 @@ async function findByUser(user: PublicKey) {
 //   );
 // }
 
+// Close completed escrows by user
 async function main() {
   const escrows = await findByUser(
     new PublicKey(''),
@@ -243,6 +246,13 @@ async function main() {
   }
 }
 
+/* There are 3 possible states
+  - Still in the midst of DCA
+  - DCA complete but user haven't claimed
+  - DCA complete and user claimed
+*/
+
+// Get current and completed DCA
 // async function main() {
 //   const res = await findByUser(
 //     new PublicKey(''),
@@ -261,6 +271,7 @@ async function main() {
 //   console.log(JSON.stringify({ currentDcas, completedDcas }, null, 2));
 // }
 
+// Get current and completed DCA Escrows
 // async function main() {
 //   const res = await findByUser(
 //     new PublicKey(''),
