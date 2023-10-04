@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "example": "dotenv ts-node src/index.ts"
+    "example": "dotenv ts-node src/index.ts",
+    "aidrop": "dotenv ts-node src/aidrop.ts"
   },
   "keywords": [],
   "author": "Josh Teng <josh@raccoons.dev>",
