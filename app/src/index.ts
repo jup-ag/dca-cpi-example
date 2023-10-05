@@ -22,7 +22,7 @@ import { Decimal } from 'decimal.js';
 const RPC = process.env.RPC || 'https://api.devnet.solana.com';
 const connection = new Connection(RPC);
 
-const programId = new PublicKey('EXDCASuSBHrbJqf3tbap86YeWaGoEeCqBhGRbUSnoDqm');
+const programId = new PublicKey('5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR');
 const provider = new AnchorProvider(
   connection,
   {} as any,
@@ -281,6 +281,5 @@ async function main() {
 
 //   console.log({ closed, open });
 // }
-
 
 main();
