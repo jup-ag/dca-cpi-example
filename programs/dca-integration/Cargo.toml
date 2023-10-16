@@ -20,3 +20,6 @@ anchor-lang = { version = "0.28.0", features = ["init-if-needed"] }
 anchor-spl = { version = "0.28.0" }
 jupiter-dca = { git = "https://github.com/jup-ag/dca-cpi", rev = "545c5ee" }
 num-traits = "0.2.15"
+solana-program = "=1.16.12"
+borsh = "0.10.3"
+borsh-derive = "0.10.3"

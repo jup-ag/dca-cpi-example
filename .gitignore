@@ -8,3 +8,5 @@ test-ledger
 .yarn
 key.json
 app/.tool-versions
+.env
+keys

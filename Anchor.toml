@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-dca_integration = "5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR"
+dca_integration = "BoDCAjKTzVkunw5xx5r3EPWqe3uyNABJJjSRCJNoRmZa"
 
 [registry]
 url = "https://api.apr.dev"
@@ -16,6 +16,6 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 deploy-mainnet = "solana program deploy target/deploy/dca_integration.so --keypair ~/.config/solana/id.json --program-id target/deploy/dca_integration-keypair.json"
 
 # ```sh
-# anchor idl init --provider.cluster mainnet --filepath ./target/idl/dca_integration.json 5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR --provider.wallet ~/.config/solana/id.json
-# anchor idl upgrade --provider.cluster mainnet --filepath ./target/idl/dca_integration.json 5mrhiqFFXyfJMzAJc5vsEQ4cABRhfsP7MgSVgGQjfcrR --provider.wallet ~/.config/solana/id.json
+# anchor idl init --provider.cluster mainnet --filepath ./target/idl/dca_integration.json BoDCAjKTzVkunw5xx5r3EPWqe3uyNABJJjSRCJNoRmZa --provider.wallet ~/.config/solana/id.json
+# anchor idl upgrade --provider.cluster mainnet --filepath ./target/idl/dca_integration.json BoDCAjKTzVkunw5xx5r3EPWqe3uyNABJJjSRCJNoRmZa --provider.wallet ~/.config/solana/id.json
 # ```

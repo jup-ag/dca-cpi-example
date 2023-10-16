@@ -1,6 +1,9 @@
-use crate::constants::ESCROW_SEED;
+use crate::constants::*;
+use crate::constants::{ACCEPTED_DURATION_SECONDS, ESCROW_SEED};
+use crate::errors::EscrowErrors;
 use crate::{escrow_seeds, state::Escrow};
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::clock::SECONDS_PER_DAY;
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token, TokenAccount, Transfer},
@@ -77,10 +80,44 @@ pub fn setup_dca(
     in_amount: u64,
     in_amount_per_cycle: u64,
     cycle_frequency: i64,
-    min_out_amount: Option<u64>,
-    max_out_amount: Option<u64>,
-    start_at: Option<i64>,
+    plan_duration_seconds: u32,
+    // min_out_amount: Option<u64>,
+    // max_out_amount: Option<u64>,
+    // start_at: Option<i64>,
 ) -> Result<()> {
+    // output == BONK
+    require_keys_eq!(
+        ctx.accounts.output_mint.key(),
+        Pubkey::new_from_array(BONK_MINT)
+    );
+
+    // input != BONK
+    require_keys_neq!(
+        ctx.accounts.input_mint.key(),
+        Pubkey::new_from_array(BONK_MINT)
+    );
+
+    // allow 5 minutes for testing
+    require!(
+        cycle_frequency == 60_i64 || cycle_frequency as u64 == SECONDS_PER_DAY,
+        EscrowErrors::InvalidPlanParameters,
+    );
+    // force 24-hr frequency (could change if supported plans change)
+    // require_eq!(
+    //     cycle_frequency as u64,
+    //     SECONDS_PER_DAY,
+    //     EscrowErrors::InvalidPlanParameters,
+    // );
+
+    // make sure plan is supported
+    require!(
+        ACCEPTED_DURATION_SECONDS
+            .iter()
+            .find(|&d| d.eq(&plan_duration_seconds))
+            .is_some(),
+        EscrowErrors::InvalidPlanParameters,
+    );
+
     msg!("Transfer from user");
     anchor_spl::token::transfer(
         CpiContext::new(
@@ -106,6 +143,7 @@ pub fn setup_dca(
     escrow.completed = false;
     escrow.airdropped = false;
     escrow.bump = *ctx.bumps.get("escrow").unwrap();
+    escrow.plan_duration_seconds = plan_duration_seconds;
 
     msg!("Construct open dca ctx");
     let idx_bytes = ctx.accounts.escrow.idx.to_le_bytes();
@@ -138,9 +176,9 @@ pub fn setup_dca(
         in_amount,
         in_amount_per_cycle,
         cycle_frequency,
-        min_out_amount,
-        max_out_amount,
-        start_at,
+        None,
+        None,
+        None,
     )?;
     msg!("Success");
 

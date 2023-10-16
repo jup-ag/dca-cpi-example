@@ -22,4 +22,7 @@ pub enum EscrowErrors {
 
     #[msg("Overflow")]
     MathOverflow,
+
+    #[msg("Invalid Plan Parameters")]
+    InvalidPlanParameters,
 }

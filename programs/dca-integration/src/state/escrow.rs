@@ -14,6 +14,7 @@ pub struct Escrow {
     pub completed: bool,
     pub airdropped: bool,
     pub bump: u8,
+    pub plan_duration_seconds: u32,
 }
 
 impl Escrow {
